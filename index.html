@@ -1,0 +1,607 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bolão Copa do Mundo 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400;0,500;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/bolao.css">
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<div id="app">
+
+<!-- ===================== WELCOME ===================== -->
+<div class="page show" id="p-welcome">
+  <div class="whero">
+    <div class="whero-sky"></div>
+    <div class="whero-pitch"></div>
+    <div class="whero-particles" id="whero-particles"></div>
+    <!-- Mastercard orbital arcs (Signal Orange) -->
+    <svg aria-hidden="true" viewBox="0 0 430 200" width="430" height="200" style="position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:-1;pointer-events:none">
+      <defs>
+        <linearGradient id="orbG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#CF4500" stop-opacity="0.05"/>
+          <stop offset="50%" stop-color="#F37338" stop-opacity="0.55"/>
+          <stop offset="100%" stop-color="#CF4500" stop-opacity="0.05"/>
+        </linearGradient>
+      </defs>
+      <circle cx="162" cy="100" r="128" fill="none" stroke="#CF4500" stroke-width="1.4" opacity="0.28"/>
+      <circle cx="268" cy="100" r="128" fill="none" stroke="#F37338" stroke-width="1.4" opacity="0.22"/>
+      <path d="M215 0 A128 128 0 0 1 215 200" fill="none" stroke="url(#orbG)" stroke-width="2.2"/>
+    </svg>
+
+
+    <div class="whero-emblem">
+      <div class="halo"></div>
+      <div class="ring"></div>
+      <div class="ball">
+        <svg width="74" height="74" viewBox="0 0 86 86" fill="none">
+          <defs>
+            <radialGradient id="bg" cx="34%" cy="30%" r="72%">
+              <stop offset="0%" stop-color="#1a2a4e"/>
+              <stop offset="100%" stop-color="#060c1a"/>
+            </radialGradient>
+          </defs>
+          <circle cx="43" cy="43" r="40" fill="url(#bg)" stroke="rgba(255,255,255,0.28)" stroke-width="2"/>
+          <path d="M43 10 L55 19 L51 31 L35 31 L31 19 Z" fill="rgba(255,255,255,0.93)" stroke="#07101f" stroke-width="0.8"/>
+          <path d="M11 43 L22 35 L32 43 L29 57 L15 59 Z" fill="rgba(255,255,255,0.93)" stroke="#07101f" stroke-width="0.8"/>
+          <path d="M75 43 L64 35 L54 43 L57 57 L71 59 Z" fill="rgba(255,255,255,0.93)" stroke="#07101f" stroke-width="0.8"/>
+          <path d="M35 67 L43 61 L51 67 L48 77 L38 77 Z" fill="rgba(255,255,255,0.93)" stroke="#07101f" stroke-width="0.8"/>
+          <ellipse cx="32" cy="26" rx="7" ry="4" fill="rgba(255,255,255,0.14)" transform="rotate(-30 32 26)"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="whero-eyebrow"><span class="dot"></span>Copa do Mundo FIFA · 2026</div>
+    <div class="whero-kicker">Bolão da</div>
+    <h1 class="whero-title">Copa<br>2026</h1>
+    <div class="whero-edition">48 Seleções · 104 Jogos · 1 Campeão</div>
+
+    <div class="whero-hosts">
+      <div class="whero-host"><img src="https://flagcdn.com/w40/us.png" alt="EUA"><span>EUA</span></div>
+      <div class="whero-host"><img src="https://flagcdn.com/w40/ca.png" alt="Canadá"><span>Canadá</span></div>
+      <div class="whero-host"><img src="https://flagcdn.com/w40/mx.png" alt="México"><span>México</span></div>
+    </div>
+
+    <div class="cd-wrap">
+      <div class="cd-head"><span>⚽</span> A bola rola em</div>
+      <div id="cd-body">
+        <div class="cd-grid">
+          <div class="cd-cell"><div class="cd-num" id="cd-d">--</div><div class="cd-lbl">Dias</div></div>
+          <div class="cd-cell"><div class="cd-num" id="cd-h">--</div><div class="cd-lbl">Horas</div></div>
+          <div class="cd-cell"><div class="cd-num" id="cd-m">--</div><div class="cd-lbl">Min</div></div>
+          <div class="cd-cell"><div class="cd-num" id="cd-s">--</div><div class="cd-lbl">Seg</div></div>
+        </div>
+      </div>
+      <div class="cd-foot">
+        <img src="https://flagcdn.com/w20/mx.png" class="flag-img" alt=""> Abertura · 11 jun · Estádio Azteca, Cidade do México
+      </div>
+    </div>
+
+    <div class="whero-cta">
+      <button class="btn btn-g" onclick="nav('login')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:6px"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 10c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        Entrar / Me Cadastrar
+      </button>
+      <button class="wlink" onclick="nav('admin-login')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+        Acessar Painel Admin
+      </button>
+    </div>
+  </div>
+
+  <div class="scroll pad pad-b">
+    <div class="wsec-h"><span class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 5h-2V3H7v2H5C3.9 5 3 5.9 3 7v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V18H9v2h6v-2h-2v-2.1a5.01 5.01 0 003.61-2.96C19.08 11.63 21 9.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg></span>Classificação ao vivo</div>
+    <div class="card">
+      <div id="wl-rank"></div>
+    </div>
+
+    <div class="card" id="wl-players-card" style="display:none">
+      <div class="card-title">👥 Quem está no bolão</div>
+      <div class="players-grid" id="wl-players-grid"></div>
+    </div>
+
+    <div class="wsec-h"><span class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5l-8-3z"/></svg></span>Como pontuar</div>
+    <div class="sg" style="margin-bottom:12px">
+      <div class="sg-row">⭐ Placar exato <span class="badge b4">10 pts</span></div>
+      <div class="sg-row">✓ Vencedor + 1 placar certo <span class="badge b3">7 pts</span></div>
+      <div class="sg-row">✓ Só vencedor / Empate <span class="badge b3">5 pts</span></div>
+      <div class="sg-row">↑ Só 1 placar certo <span class="badge bpd">2 pts</span></div>
+      <div class="sg-row">✗ Errou ou não palpitou <span class="badge b0">0 pts</span></div>
+      <div class="sg-note">Desempate: mais placares exatos</div>
+    </div>
+
+    <button class="btn btn-g" onclick="nav('login')" style="margin-top:4px">
+      Entrar e dar meus palpites →
+    </button>
+  </div>
+</div>
+
+<!-- ===================== LOGIN ===================== -->
+<div class="page" id="p-login">
+  <div class="hdr">
+    <button class="hdr-back" onclick="nav('welcome')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <div class="hdr-info"><div class="hdr-title">Entrar no Bolão</div></div>
+  </div>
+  <div class="scroll pad" style="padding-top:20px">
+    <div class="card">
+      <div class="sec-title">Já sou participante</div>
+      <div class="fg">
+        <label class="fl">Seu nome</label>
+        <select class="fi" id="sel-name"><option value="">— Escolha seu nome —</option></select>
+      </div>
+      <div class="fg">
+        <label class="fl">PIN (4 dígitos)</label>
+        <input class="fi fi-c" type="password" id="in-pin" maxlength="4" inputmode="numeric" placeholder="••••">
+      </div>
+      <button class="btn btn-g" onclick="doLogin()">Entrar</button>
+    </div>
+    <div style="text-align:center;padding:10px 0;font-size:12px;color:var(--dim);font-weight:700;letter-spacing:.5px">— ou —</div>
+    <div class="card">
+      <div class="sec-title">Primeira vez? Cadastre-se!</div>
+      <div class="fg">
+        <label class="fl">Seu nome no bolão</label>
+        <input class="fi" type="text" id="in-newname" placeholder="Ex: João Silva" autocomplete="off">
+      </div>
+      <div class="fg">
+        <label class="fl">Crie seu PIN (4 dígitos)</label>
+        <input class="fi fi-c" type="password" id="in-newpin" maxlength="4" inputmode="numeric" placeholder="••••">
+      </div>
+      <div class="fg">
+        <label class="fl">Confirme o PIN</label>
+        <input class="fi fi-c" type="password" id="in-newpin2" maxlength="4" inputmode="numeric" placeholder="••••">
+      </div>
+      <button class="btn btn-y" onclick="doRegister()">Cadastrar e Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ADMIN LOGIN ===================== -->
+<div class="page" id="p-admin-login">
+  <div class="hdr">
+    <button class="hdr-back" onclick="nav('welcome')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <div class="hdr-info"><div class="hdr-title">Acesso Admin</div></div>
+  </div>
+  <div class="scroll pad" style="padding-top:32px">
+    <div class="card">
+      <div class="sec-title">Acesso Administrativo</div>
+      <div class="fg">
+        <label class="fl">Senha de admin</label>
+        <input class="fi" type="password" id="in-admpw" placeholder="Senha">
+      </div>
+      <button class="btn btn-b" onclick="doAdminLogin()">Entrar como Admin</button>
+      <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px">Senha padrão: <strong style="color:var(--y)">admin123</strong></p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== DASHBOARD ===================== -->
+<div class="page" id="p-dash">
+  <div class="hdr">
+    <div class="hdr-info">
+      <div class="hdr-title" id="dash-hdr">Meu Bolão</div>
+      <div class="hdr-sub">Copa do Mundo 2026</div>
+    </div>
+    <button class="theme-btn" id="theme-btn-dash" onclick="toggleTheme()">☀️</button>
+    <button class="hdr-act" onclick="doLogout()" style="margin-left:6px">Sair</button>
+  </div>
+  <div class="scroll pad pad-b">
+    <!-- PWA install banner -->
+    <div class="pwa-banner" id="pwa-banner" onclick="installPWA()">
+      <div class="pwa-banner-ico">📲</div>
+      <div class="pwa-banner-info">
+        <div class="pwa-banner-title">Instalar App</div>
+        <div class="pwa-banner-sub">Adicione à tela inicial do seu celular</div>
+      </div>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="rgba(255,255,255,.5)"><path d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18c.62-.39.62-1.29 0-1.69L9.54 5.98C8.87 5.55 8 6.03 8 6.82z"/></svg>
+    </div>
+
+    <!-- Position banner — clicável para perfil -->
+    <div class="pos-banner" onclick="goTo('profile')" style="cursor:pointer">
+      <div class="pos-trophy-bg">🏆</div>
+      <div class="pos-num" id="d-pos">—</div>
+      <div class="pos-ordinal">Posição no Ranking · toque para ver perfil</div>
+      <div class="pos-name" id="d-uname">—</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-val" id="d-pts">0</div><div class="stat-lbl">Pontos</div></div>
+      <div class="stat"><div class="stat-val" id="d-ex">0</div><div class="stat-lbl">Exatos</div></div>
+      <div class="stat"><div class="stat-val" id="d-acc">0</div><div class="stat-lbl">Acertos</div></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-g" onclick="goTo('preds')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:5px"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 6l-1.8 5.5H5l4.6 3.3-1.8 5.5L12 17l4.2 3.3-1.8-5.5L19 11h-5.2z"/></svg>
+        Palpites
+      </button>
+      <button class="btn btn-b" onclick="goTo('rank')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:5px"><path d="M19 5h-2V3H7v2H5C3.9 5 3 5.9 3 7v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V18H9v2h6v-2h-2v-2.1a5.01 5.01 0 003.61-2.96C19.08 11.63 21 9.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg>
+        Ranking
+      </button>
+    </div>
+    <div class="btn-row" style="margin-top:-4px">
+      <button class="btn btn-out" onclick="goTo('groups')">
+        🗂 Tabela de Grupos
+      </button>
+      <button class="btn btn-out" onclick="goTo('profile')">
+        👤 Meu Perfil
+      </button>
+    </div>
+    <div class="card">
+      <div class="card-title">⏱ Próximos Jogos</div>
+      <div id="d-next-games"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Progresso dos palpites</div>
+      <div class="prog-bar"><div class="prog-fill" id="d-prog" style="width:0%"></div></div>
+      <div class="prog-lbl" id="d-prog-lbl">0 de 104 palpites dados</div>
+    </div>
+    <div class="refresh-bar">
+      <span><span class="live-dot"></span><span id="dash-upd-time">Ao vivo</span></span>
+      <button onclick="manualRefresh()">↺ Atualizar</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Últimos resultados</div>
+      <div id="d-recent"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Compartilhar palpites</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Gere um código e envie para o admin pelo WhatsApp.</p>
+      <button class="btn btn-out btn-sm" onclick="genCode()">Gerar código de palpites</button>
+    </div>
+  </div>
+  <div class="bot-nav">
+    <button class="nav-btn on" id="nb-dash" onclick="goTo('dash')">
+      <span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></span>Início
+    </button>
+    <button class="nav-btn" id="nb-preds" onclick="goTo('preds')">
+      <span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 6l-1.8 5.5H5l4.6 3.3-1.8 5.5L12 17l4.2 3.3-1.8-5.5L19 11h-5.2z"/></svg></span>Palpites
+    </button>
+    <button class="nav-btn" id="nb-mygames" onclick="goTo('mygames')">
+      <span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z"/></svg></span>Meus Jogos
+    </button>
+    <button class="nav-btn" id="nb-rank" onclick="goTo('rank')">
+      <span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19 5h-2V3H7v2H5C3.9 5 3 5.9 3 7v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V18H9v2h6v-2h-2v-2.1a5.01 5.01 0 003.61-2.96C19.08 11.63 21 9.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg></span>Ranking
+    </button>
+  </div>
+</div>
+
+<!-- ===================== PREDICTIONS ===================== -->
+<div class="page" id="p-preds">
+  <div class="hdr">
+    <button class="hdr-back" onclick="goTo('dash')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <div class="hdr-info"><div class="hdr-title">Meus Palpites</div></div>
+  </div>
+  <div class="pills" id="ph-pills">
+    <button class="pill on" onclick="setPhase('all',this)">Todos</button>
+
+    <button class="pill" onclick="setPhase('r1',this)">Rodada 1</button>
+    <button class="pill" onclick="setPhase('r2',this)">Rodada 2</button>
+    <button class="pill" onclick="setPhase('r3',this)">Rodada 3</button>
+    <button class="pill" onclick="setPhase('r32',this)">Rod. 32</button>
+    <button class="pill" onclick="setPhase('r16',this)">Oitavas</button>
+    <button class="pill" onclick="setPhase('qf',this)">Quartas</button>
+    <button class="pill" onclick="setPhase('sf',this)">Semis</button>
+    <button class="pill" onclick="setPhase('final',this)">Final</button>
+  </div>
+  <div id="date-strip" style="flex-shrink:0;display:none;padding:4px 14px 2px;overflow-x:auto;scrollbar-width:none"></div>
+  <div id="preds-list" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:130px"></div>
+  <div class="sticky-save"><button class="btn btn-g" onclick="savePreds()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:5px"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+    Salvar Todos os Palpites
+  </button></div>
+  <div class="bot-nav">
+    <button class="nav-btn" onclick="goTo('dash')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></span>Início</button>
+    <button class="nav-btn on" onclick="goTo('preds')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 6l-1.8 5.5H5l4.6 3.3-1.8 5.5L12 17l4.2 3.3-1.8-5.5L19 11h-5.2z"/></svg></span>Palpites</button>
+    <button class="nav-btn" onclick="goTo('mygames')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z"/></svg></span>Meus Jogos</button>
+    <button class="nav-btn" onclick="goTo('rank')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19 5h-2V3H7v2H5C3.9 5 3 5.9 3 7v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V18H9v2h6v-2h-2v-2.1a5.01 5.01 0 003.61-2.96C19.08 11.63 21 9.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg></span>Ranking</button>
+  </div>
+</div>
+
+<!-- ===================== MY GAMES ===================== -->
+<div class="page" id="p-mygames">
+  <div class="hdr">
+    <button class="hdr-back" onclick="goTo('dash')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <div class="hdr-info"><div class="hdr-title">Meus Jogos</div></div>
+  </div>
+  <div class="scroll pad pad-b" id="mg-list"></div>
+  <div class="bot-nav">
+    <button class="nav-btn" onclick="goTo('dash')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></span>Início</button>
+    <button class="nav-btn" onclick="goTo('preds')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 6l-1.8 5.5H5l4.6 3.3-1.8 5.5L12 17l4.2 3.3-1.8-5.5L19 11h-5.2z"/></svg></span>Palpites</button>
+    <button class="nav-btn on" onclick="goTo('mygames')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z"/></svg></span>Meus Jogos</button>
+    <button class="nav-btn" onclick="goTo('rank')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19 5h-2V3H7v2H5C3.9 5 3 5.9 3 7v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V18H9v2h6v-2h-2v-2.1a5.01 5.01 0 003.61-2.96C19.08 11.63 21 9.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg></span>Ranking</button>
+  </div>
+</div>
+
+<!-- ===================== RANKING ===================== -->
+<div class="page" id="p-rank">
+  <div class="hdr">
+    <button class="hdr-back" onclick="goTo('dash')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <div class="hdr-info"><div class="hdr-title">Ranking Geral</div></div>
+  </div>
+  <div class="scroll pad pad-b">
+    <!-- Animated trophy -->
+    <div class="trophy-wrap">
+      <div class="trophy-glow"></div>
+      <span class="spark"></span>
+      <span class="spark"></span>
+      <span class="spark"></span>
+      <span class="spark"></span>
+      <span class="spark"></span>
+      <span class="spark"></span>
+      <div class="trophy-svg-anim">
+        <svg width="72" height="82" viewBox="0 0 72 82" fill="none">
+          <defs>
+            <linearGradient id="tg1" x1="0" y1="0" x2="72" y2="82" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#FFE566"/>
+              <stop offset="55%" stop-color="#F5C518"/>
+              <stop offset="100%" stop-color="#B8880C"/>
+            </linearGradient>
+            <linearGradient id="tg2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#F5C518"/>
+              <stop offset="100%" stop-color="#9A6F08"/>
+            </linearGradient>
+          </defs>
+          <!-- Cup body -->
+          <path d="M13 8 H59 L54 46 Q36 60 18 46 Z" fill="url(#tg1)"/>
+          <!-- Shine -->
+          <path d="M22 12 Q26 10 30 20 Q26 34 22 42" stroke="rgba(255,255,255,0.28)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <!-- Star -->
+          <path d="M36 19 L38.5 27 L47 27 L40.5 32 L43 40 L36 35 L29 40 L31.5 32 L25 27 L33.5 27 Z" fill="rgba(255,255,255,0.28)"/>
+          <!-- Left handle -->
+          <path d="M13 14 Q2 14 2 30 Q2 46 13 47" stroke="url(#tg1)" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+          <!-- Right handle -->
+          <path d="M59 14 Q70 14 70 30 Q70 46 59 47" stroke="url(#tg1)" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+          <!-- Stem -->
+          <rect x="30" y="46" width="12" height="18" rx="3" fill="url(#tg2)"/>
+          <!-- Base -->
+          <rect x="16" y="64" width="40" height="12" rx="6" fill="url(#tg1)"/>
+          <!-- Base detail -->
+          <rect x="20" y="68" width="32" height="4" rx="2" fill="rgba(0,0,0,0.18)"/>
+        </svg>
+      </div>
+      <div class="trophy-title">Classificação Geral</div>
+    </div>
+
+    <div class="refresh-bar">
+      <span><span class="live-dot"></span><span id="rk-upd-time">Calculando...</span></span>
+      <button onclick="manualRefresh()">↺ Atualizar agora</button>
+    </div>
+
+    <!-- Filtros de ranking -->
+    <div class="rk-filters">
+      <select class="fi" id="rk-fase" onchange="renderRank()">
+        <option value="all">Fase: Todas</option>
+        <option value="group">Grupos</option>
+        <option value="ko">Eliminatórias</option>
+      </select>
+      <select class="fi" id="rk-rodada" onchange="renderRank()">
+        <option value="all">Rodada: Todas</option>
+        <option value="1">Rodada 1</option>
+        <option value="2">Rodada 2</option>
+        <option value="3">Rodada 3</option>
+      </select>
+    </div>
+
+    <!-- Podium top 3 -->
+    <div id="rank-podium"></div>
+
+    <div class="card"><div id="rank-tbl"></div></div>
+
+    <!-- Ranking chart -->
+    <div class="card chart-card">
+      <div class="card-title">📈 Evolução de Pontos por Rodada</div>
+      <div id="rank-chart"></div>
+    </div>
+
+    <div style="margin-bottom:12px">
+      <button class="btn btn-out" onclick="exportRanking()">
+        📤 Exportar / Compartilhar Ranking
+      </button>
+    </div>
+
+    <div class="sg">
+      <div class="card-title" style="color:rgba(255,255,255,.5)">Sistema de Pontuação</div>
+      <div class="sg-row">⭐ Placar exato <span class="badge b4">10 pts</span></div>
+      <div class="sg-row">✓ Vencedor + 1 placar certo <span class="badge b3">7 pts</span></div>
+      <div class="sg-row">✓ Só vencedor / Empate <span class="badge b3">5 pts</span></div>
+      <div class="sg-row">↑ Só 1 placar certo <span class="badge bpd">2 pts</span></div>
+      <div class="sg-row">✗ Errou ou não palpitou <span class="badge b0">0 pts</span></div>
+      <div class="sg-note">Desempate: mais placares exatos</div>
+    </div>
+  </div>
+  <div class="bot-nav">
+    <button class="nav-btn" onclick="goTo('dash')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></span>Início</button>
+    <button class="nav-btn" onclick="goTo('preds')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 6l-1.8 5.5H5l4.6 3.3-1.8 5.5L12 17l4.2 3.3-1.8-5.5L19 11h-5.2z"/></svg></span>Palpites</button>
+    <button class="nav-btn" onclick="goTo('mygames')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z"/></svg></span>Meus Jogos</button>
+    <button class="nav-btn on" onclick="goTo('rank')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19 5h-2V3H7v2H5C3.9 5 3 5.9 3 7v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V18H9v2h6v-2h-2v-2.1a5.01 5.01 0 003.61-2.96C19.08 11.63 21 9.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg></span>Ranking</button>
+  </div>
+</div>
+
+<!-- ===================== ADMIN ===================== -->
+<div class="page" id="p-admin">
+  <div class="hdr">
+    <div class="hdr-info">
+      <div class="hdr-title">Painel Admin</div>
+      <div class="hdr-sub">Bolão Copa 2026</div>
+    </div>
+    <button class="hdr-act" onclick="doLogout()">Sair</button>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn on" onclick="aTab('ptcp',this)">Participantes</button>
+    <button class="tab-btn" onclick="aTab('res',this)">Resultados</button>
+    <button class="tab-btn" onclick="aTab('rank',this)">Ranking</button>
+    <button class="tab-btn" onclick="aTab('cfg',this)">Config</button>
+  </div>
+
+  <!-- ADMIN: Participantes -->
+  <div class="scroll pad pad-b" id="a-ptcp">
+    <div class="card">
+      <div class="sec-title">Adicionar participante</div>
+      <div class="fg"><label class="fl">Nome</label><input class="fi" type="text" id="a-newname" placeholder="Nome do participante" autocomplete="off"></div>
+      <div class="fg"><label class="fl">PIN (4 dígitos)</label><input class="fi fi-c" type="text" id="a-newpin" maxlength="4" inputmode="numeric" placeholder="1234"></div>
+      <button class="btn btn-g btn-sm" onclick="aAddPtcp()">Adicionar</button>
+    </div>
+    <div class="card">
+      <div class="sec-title">Importar código de palpites</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Cole o código gerado pelo participante.</p>
+      <textarea class="fi fi-ta" id="a-import-code" rows="3" placeholder="Cole o código aqui..."></textarea>
+      <button class="btn btn-y btn-sm" style="margin-top:8px" onclick="aImportCode()">Importar Palpites</button>
+    </div>
+    <div class="card">
+      <div class="sec-title">Participantes cadastrados</div>
+      <div id="a-ptcp-list"></div>
+    </div>
+  </div>
+
+  <!-- ADMIN: Resultados -->
+  <div id="a-res" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+    <div style="padding:10px 16px 0;flex-shrink:0">
+      <div style="display:flex;gap:8px;margin-bottom:6px">
+        <button class="btn btn-g btn-sm" onclick="aFetchResults()" style="flex:1">🌐 Online</button>
+        <button class="pill on" id="hoje-pill" onclick="aToggleHoje(this)" style="flex-shrink:0">Hoje</button>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-b btn-sm" onclick="importXML()" style="flex:1">📂 Importar XML</button>
+        <button class="btn btn-out btn-sm" onclick="downloadXMLTemplate()" style="flex:1">⬇ Template XML</button>
+      </div>
+    </div>
+    <div id="api-status-res" class="api-status" style="margin:6px 16px 0;display:none"></div>
+    <div class="pills" id="a-phase-pills">
+      <button class="pill on" onclick="aSetPhase('all',this)">Todos</button>
+      <button class="pill" onclick="aSetPhase('r1',this)">Rodada 1</button>
+      <button class="pill" onclick="aSetPhase('r2',this)">Rodada 2</button>
+      <button class="pill" onclick="aSetPhase('r3',this)">Rodada 3</button>
+      <button class="pill" onclick="aSetPhase('r32',this)">Rod. 32</button>
+      <button class="pill" onclick="aSetPhase('r16',this)">Oitavas</button>
+      <button class="pill" onclick="aSetPhase('qf',this)">Quartas</button>
+      <button class="pill" onclick="aSetPhase('sf',this)">Semis</button>
+      <button class="pill" onclick="aSetPhase('final',this)">Final</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:0 16px 20px" id="a-matches"></div>
+  </div>
+
+  <!-- ADMIN: Ranking -->
+  <div class="scroll pad" id="a-rank" style="display:none">
+    <div class="card"><div id="a-rank-tbl"></div></div>
+  </div>
+
+  <!-- ADMIN: Config -->
+  <div class="scroll pad pad-b" id="a-cfg" style="display:none">
+    <div class="card">
+      <div class="sec-title">Banner do Bolão</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Imagem exibida no topo da tela inicial. Máx. 1MB.</p>
+      <div id="cfg-banner-preview" style="margin-bottom:10px"></div>
+      <div class="btn-row" style="margin-bottom:0">
+        <button class="btn btn-g btn-sm" onclick="aUploadBanner()">📷 Carregar imagem</button>
+        <button class="btn btn-out btn-sm" onclick="aClearBanner()">Remover</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-title">Alterar senha admin</div>
+      <div class="fg"><label class="fl">Senha atual</label><input class="fi" type="password" id="cfg-old" placeholder="Senha atual"></div>
+      <div class="fg"><label class="fl">Nova senha</label><input class="fi" type="password" id="cfg-new" placeholder="Nova senha (mín. 4 caracteres)"></div>
+      <button class="btn btn-b btn-sm" onclick="aChangePw()">Alterar Senha</button>
+    </div>
+    <div class="card">
+      <div class="sec-title">Backup dos dados</div>
+      <div class="btn-row" style="margin-bottom:0">
+        <button class="btn btn-out" onclick="aExport()">Exportar JSON</button>
+        <button class="btn btn-out" onclick="aImportFile()">Importar JSON</button>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px">Salve cópias regularmente.</p>
+    </div>
+    <div class="card" style="border:1px solid rgba(245,197,24,.25)">
+      <div class="sec-title">Buscar Resultados Automático</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px">
+        Use a API gratuita <strong style="color:var(--y)">football-data.org</strong> para importar resultados automaticamente.
+        <br><a href="#" onclick="openApiHelp();return false" style="color:var(--y);font-size:11px">Como obter a chave gratuita?</a>
+      </p>
+      <div class="fg">
+        <label class="fl">Chave de API (football-data.org)</label>
+        <input class="fi" type="text" id="cfg-apikey" placeholder="Ex: a1b2c3d4e5f6..." autocomplete="off">
+      </div>
+      <div class="btn-row" style="margin-bottom:4px">
+        <button class="btn btn-g" onclick="aFetchResults()">Buscar Resultados</button>
+        <button class="btn btn-out btn-sm" onclick="aSaveApiKey()">Salvar chave</button>
+      </div>
+      <div id="api-status-cfg" class="api-status"></div>
+    </div>
+    <div class="card" style="border:1px solid rgba(229,57,53,.35)">
+      <div class="sec-title" style="color:#f87171">Zona de Perigo</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Apaga todos os dados permanentemente.</p>
+      <div class="btn-row" style="margin-bottom:0">
+        <button class="btn btn-r btn-sm" onclick="aClearResults()">Limpar Resultados</button>
+        <button class="btn btn-r btn-sm" onclick="aReset()">Resetar Tudo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PROFILE ===================== -->
+<div class="page" id="p-profile">
+  <div class="hdr">
+    <button class="hdr-back" onclick="goTo('dash')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <div class="hdr-info"><div class="hdr-title">Meu Perfil</div></div>
+    <button class="theme-btn" id="theme-btn-prof" onclick="toggleTheme()">☀️</button>
+  </div>
+  <div class="scroll pad pad-b" id="profile-content"></div>
+  <div class="bot-nav">
+    <button class="nav-btn" onclick="goTo('dash')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></span>Início</button>
+    <button class="nav-btn" onclick="goTo('preds')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 6l-1.8 5.5H5l4.6 3.3-1.8 5.5L12 17l4.2 3.3-1.8-5.5L19 11h-5.2z"/></svg></span>Palpites</button>
+    <button class="nav-btn" onclick="goTo('mygames')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z"/></svg></span>Meus Jogos</button>
+    <button class="nav-btn" onclick="goTo('rank')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19 5h-2V3H7v2H5C3.9 5 3 5.9 3 7v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V18H9v2h6v-2h-2v-2.1a5.01 5.01 0 003.61-2.96C19.08 11.63 21 9.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg></span>Ranking</button>
+  </div>
+</div>
+
+<!-- ===================== GRUPOS ===================== -->
+<div class="page" id="p-groups">
+  <div class="hdr">
+    <button class="hdr-back" onclick="goTo('dash')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <div class="hdr-info"><div class="hdr-title">Tabela de Grupos</div></div>
+    <button class="theme-btn" id="theme-btn-grp" onclick="toggleTheme()">☀️</button>
+  </div>
+  <div class="scroll pad pad-b">
+    <div class="grp-tabs" id="grp-tabs"></div>
+    <div class="card" id="groups-content"></div>
+  </div>
+  <div class="bot-nav">
+    <button class="nav-btn" onclick="goTo('dash')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></span>Início</button>
+    <button class="nav-btn" onclick="goTo('preds')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 6l-1.8 5.5H5l4.6 3.3-1.8 5.5L12 17l4.2 3.3-1.8-5.5L19 11h-5.2z"/></svg></span>Palpites</button>
+    <button class="nav-btn" onclick="goTo('mygames')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z"/></svg></span>Meus Jogos</button>
+    <button class="nav-btn" onclick="goTo('rank')"><span class="nav-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19 5h-2V3H7v2H5C3.9 5 3 5.9 3 7v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V18H9v2h6v-2h-2v-2.1a5.01 5.01 0 003.61-2.96C19.08 11.63 21 9.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg></span>Ranking</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- MODAL -->
+<div id="moverlay" onclick="closeModal()">
+  <div id="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" id="m-title"></div>
+    <div id="m-body"></div>
+  </div>
+</div>
+
+<script src="bolao_template.js"></script>
+</body>
+</html>
