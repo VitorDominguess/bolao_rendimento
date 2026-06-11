@@ -16,8 +16,6 @@ const USE_FIREBASE = firebaseConfig.apiKey && firebaseConfig.apiKey !== "COLE_AQ
 // FIREBASE SYNC (Versão Corrigida)
 // ─────────────────────────────────────────────
 // Declaramos as variáveis no topo do arquivo (escopo global do script)
-let _db = null;
-let _fbEnabled = false;
 
 // Inicialização Garantida
 if (USE_FIREBASE) {
@@ -190,7 +188,7 @@ function save(fn){ const d=getData(); fn(d); setData(d); }
 // ─────────────────────────────────────────────
 // FIREBASE SYNC
 // ─────────────────────────────────────────────
-let _db=null,_fbEnabled=false,_ignoreSnap=false;
+let _ignoreSnap=false;
 
 function _reRenderCurrent(){
   const map={'p-rank':()=>renderRank(),'p-preds':()=>renderPreds(),'p-admin':()=>renderAdminCfg(),'p-profile':()=>renderProfile(),'p-groups':()=>renderGroups(),'p-next':()=>renderNextGames()};
@@ -200,38 +198,10 @@ function _reRenderCurrent(){
   renderWelcome();
 }
 
-function initFirebase(){
-  if(!USE_FIREBASE){console.log('[Firebase] Config não preenchida — usando só localStorage');return;}
-  try{
-    firebase.initializeApp(FIREBASE_CONFIG);
-    _db=firebase.firestore();
-    _fbEnabled=true;
-    // Carrega dados remotos ao iniciar
-    _db.collection('bolao').doc('main').get().then(doc=>{
-      if(doc.exists){
-        const remote=doc.data().payload;
-        localStorage.setItem(SK,JSON.stringify(remote));
-        console.log('[Firebase] Dados carregados do Firestore');
-        _reRenderCurrent();
-      } else {
-        // Nenhum dado remoto ainda — sobe o local
-        const local=getData();
-        _db.collection('bolao').doc('main').set({payload:local,ts:Date.now()}).catch(console.warn);
-      }
-      // Listener em tempo real — sincroniza quando outro dispositivo salva
-      _db.collection('bolao').doc('main').onSnapshot(snap=>{
-        if(!snap.exists||_ignoreSnap) return;
-        const remote=snap.data().payload;
-        const local=localStorage.getItem(SK);
-        if(JSON.stringify(remote)!==local){
-          localStorage.setItem(SK,JSON.stringify(remote));
-          _reRenderCurrent();
-          toast('🔄 Dados atualizados!',1800);
-        }
-      });
-    }).catch(e=>console.warn('[Firebase] Erro ao carregar:',e));
-  }catch(e){console.warn('[Firebase] Erro de inicialização:',e);}
-}
+// ─────────────────────────────────────────────
+// FIREBASE SYNC (Versão Blindada)
+// ─────────────────────────────────────────────
+
 
 // ─────────────────────────────────────────────
 // UTILS
@@ -1877,6 +1847,46 @@ function downloadXMLTemplate(){
   a.href=url; a.download='copa2026_resultados_template.xml';
   a.click(); URL.revokeObjectURL(url);
   toast('✅ Template XML baixado!');
+}
+
+let _db = null;
+let _fbEnabled = false;
+
+function initFirebase() {
+    // Verifica se o objeto firebase foi carregado pelo script do HTML
+    if (typeof firebase === 'undefined') {
+        console.warn('[Firebase] SDK não carregado ainda, tentando novamente...');
+        setTimeout(initFirebase, 500); 
+        return;
+    }
+
+    if (!USE_FIREBASE) {
+        console.log('[Firebase] Config não preenchida — usando só localStorage');
+        return;
+    }
+
+    try {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        _db = firebase.firestore();
+        _fbEnabled = true;
+        console.log("[Firebase] Conectado!");
+
+        // Carrega dados e ouve mudanças
+        _db.collection('bolao').doc('main').onSnapshot(snap => {
+            if (!snap.exists || _ignoreSnap) return;
+            const remote = snap.data().payload;
+            const local = localStorage.getItem(SK);
+            if (JSON.stringify(remote) !== local) {
+                localStorage.setItem(SK, JSON.stringify(remote));
+                _reRenderCurrent();
+                toast('🔄 Dados sincronizados!', 1800);
+            }
+        });
+    } catch (e) {
+        console.error('[Firebase] Erro:', e);
+    }
 }
 
 // ─────────────────────────────────────────────
