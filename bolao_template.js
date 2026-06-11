@@ -130,28 +130,95 @@ const MD1 = {A:'2026-06-11',B:'2026-06-12',C:'2026-06-13',D:'2026-06-12',
 // ─────────────────────────────────────────────
 // MATCH GENERATION
 // ─────────────────────────────────────────────
-function addDays(s,n){
-  const d=new Date(s+'T12:00:00Z');
-  d.setUTCDate(d.getUTCDate()+n);
-  return d.toISOString().slice(0,10);
-}
+// ─────────────────────────────────────────────
+// MATCH GENERATION (LISTA FIXA)
+// ─────────────────────────────────────────────
+const GROUP_MATCHES = [
+  {id:1, phase:'group', round:1, group:'A', home:'México', away:'África do Sul', date:'2026-06-11', time:'16:00'},
+  {id:2, phase:'group', round:1, group:'A', home:'Coreia do Sul', away:'Tchéquia', date:'2026-06-11', time:'23:00'},
+  {id:3, phase:'group', round:2, group:'A', home:'República Tcheca', away:'África do Sul', date:'2026-06-18', time:'13:00'},
+  {id:4, phase:'group', round:2, group:'A', home:'México', away:'Coreia do Sul', date:'2026-06-18', time:'22:00'},
+  {id:5, phase:'group', round:3, group:'A', home:'República Tcheca', away:'México', date:'2026-06-24', time:'22:00'},
+  {id:6, phase:'group', round:3, group:'A', home:'África do Sul', away:'Coreia do Sul', date:'2026-06-24', time:'22:00'},
 
-function genGroupMatches(){
-  const ms=[]; let id=1;
-  GROUPS.forEach(g=>{
-    const[t1,t2,t3,t4]=g.t;
-    const d1=MD1[g.id], d2=addDays(d1,9), d3=addDays(d1,15);
-    ms.push(
-      {id:id++,phase:'group',round:1,group:g.id,home:t1,away:t2,date:d1,time:'16:00'},
-      {id:id++,phase:'group',round:1,group:g.id,home:t3,away:t4,date:d1,time:'22:00'},
-      {id:id++,phase:'group',round:2,group:g.id,home:t1,away:t3,date:d2,time:'16:00'},
-      {id:id++,phase:'group',round:2,group:g.id,home:t2,away:t4,date:d2,time:'22:00'},
-      {id:id++,phase:'group',round:3,group:g.id,home:t1,away:t4,date:d3,time:'16:00'},
-      {id:id++,phase:'group',round:3,group:g.id,home:t2,away:t3,date:d3,time:'22:00'},
-    );
-  });
-  return ms;
-}
+  {id:7, phase:'group', round:1, group:'B', home:'Canadá', away:'Bósnia e Herzegovina', date:'2026-06-12', time:'16:00'},
+  {id:8, phase:'group', round:1, group:'B', home:'Catar', away:'Suíça', date:'2026-06-13', time:'16:00'},
+  {id:9, phase:'group', round:2, group:'B', home:'Suíça', away:'Bósnia e Herzegovina', date:'2026-06-18', time:'16:00'},
+  {id:10, phase:'group', round:2, group:'B', home:'Canadá', away:'Catar', date:'2026-06-18', time:'19:00'},
+  {id:11, phase:'group', round:3, group:'B', home:'Suíça', away:'Canadá', date:'2026-06-24', time:'16:00'},
+  {id:12, phase:'group', round:3, group:'B', home:'Bósnia e Herzegovina', away:'Catar', date:'2026-06-24', time:'16:00'},
+
+  {id:13, phase:'group', round:1, group:'C', home:'Brasil', away:'Marrocos', date:'2026-06-13', time:'19:00'},
+  {id:14, phase:'group', round:1, group:'C', home:'Haiti', away:'Escócia', date:'2026-06-13', time:'22:00'},
+  {id:15, phase:'group', round:2, group:'C', home:'Escócia', away:'Marrocos', date:'2026-06-19', time:'19:00'},
+  {id:16, phase:'group', round:2, group:'C', home:'Brasil', away:'Haiti', date:'2026-06-19', time:'21:30'},
+  {id:17, phase:'group', round:3, group:'C', home:'Escócia', away:'Brasil', date:'2026-06-24', time:'19:00'},
+  {id:18, phase:'group', round:3, group:'C', home:'Marrocos', away:'Haiti', date:'2026-06-24', time:'19:00'},
+
+  {id:19, phase:'group', round:1, group:'D', home:'Estados Unidos', away:'Paraguai', date:'2026-06-12', time:'22:00'},
+  {id:20, phase:'group', round:1, group:'D', home:'Austrália', away:'Turquia', date:'2026-06-14', time:'01:00'},
+  {id:21, phase:'group', round:2, group:'D', home:'Turquia', away:'Paraguai', date:'2026-06-20', time:'00:00'},
+  {id:22, phase:'group', round:3, group:'D', home:'Turquia', away:'Estados Unidos', date:'2026-06-25', time:'23:00'},
+  {id:23, phase:'group', round:3, group:'D', home:'Paraguai', away:'Austrália', date:'2026-06-25', time:'23:00'},
+
+  {id:24, phase:'group', round:1, group:'E', home:'Alemanha', away:'Curaçao', date:'2026-06-14', time:'14:00'},
+  {id:25, phase:'group', round:1, group:'E', home:'Costa do Marfim', away:'Equador', date:'2026-06-14', time:'20:00'},
+  {id:26, phase:'group', round:2, group:'E', home:'Alemanha', away:'Costa do Marfim', date:'2026-06-20', time:'17:00'},
+  {id:27, phase:'group', round:2, group:'E', home:'Equador', away:'Curaçao', date:'2026-06-20', time:'21:00'},
+  {id:28, phase:'group', round:3, group:'E', home:'Equador', away:'Alemanha', date:'2026-06-25', time:'17:00'},
+  {id:29, phase:'group', round:3, group:'E', home:'Curaçao', away:'Costa do Marfim', date:'2026-06-25', time:'17:00'},
+
+  {id:30, phase:'group', round:1, group:'F', home:'Holanda', away:'Japão', date:'2026-06-14', time:'17:00'},
+  {id:31, phase:'group', round:1, group:'F', home:'Suécia', away:'Tunísia', date:'2026-06-14', time:'23:00'},
+  {id:32, phase:'group', round:2, group:'F', home:'Holanda', away:'Suécia', date:'2026-06-20', time:'14:00'},
+  {id:33, phase:'group', round:2, group:'F', home:'Tunísia', away:'Japão', date:'2026-06-21', time:'01:00'},
+  {id:34, phase:'group', round:3, group:'F', home:'Japão', away:'Suécia', date:'2026-06-25', time:'20:00'},
+  {id:35, phase:'group', round:3, group:'F', home:'Tunísia', away:'Holanda', date:'2026-06-25', time:'20:00'},
+
+  {id:36, phase:'group', round:1, group:'G', home:'Bélgica', away:'Egito', date:'2026-06-15', time:'16:00'},
+  {id:37, phase:'group', round:1, group:'G', home:'Irã', away:'Nova Zelândia', date:'2026-06-15', time:'22:00'},
+  {id:38, phase:'group', round:2, group:'G', home:'Bélgica', away:'Irã', date:'2026-06-21', time:'16:00'},
+  {id:39, phase:'group', round:2, group:'G', home:'Nova Zelândia', away:'Egito', date:'2026-06-21', time:'22:00'},
+  {id:40, phase:'group', round:3, group:'G', home:'Egito', away:'Irã', date:'2026-06-27', time:'00:00'},
+  {id:41, phase:'group', round:3, group:'G', home:'Nova Zelândia', away:'Bélgica', date:'2026-06-27', time:'00:00'},
+
+  {id:42, phase:'group', round:1, group:'H', home:'Espanha', away:'Cabo Verde', date:'2026-06-15', time:'13:00'},
+  {id:43, phase:'group', round:1, group:'H', home:'Arábia Saudita', away:'Uruguai', date:'2026-06-15', time:'19:00'},
+  {id:44, phase:'group', round:2, group:'H', home:'Espanha', away:'Arábia Saudita', date:'2026-06-21', time:'13:00'},
+  {id:45, phase:'group', round:2, group:'H', home:'Uruguai', away:'Cabo Verde', date:'2026-06-21', time:'19:00'},
+  {id:46, phase:'group', round:3, group:'H', home:'Cabo Verde', away:'Arábia Saudita', date:'2026-06-26', time:'21:00'},
+  {id:47, phase:'group', round:3, group:'H', home:'Uruguai', away:'Espanha', date:'2026-06-26', time:'21:00'},
+
+  {id:48, phase:'group', round:1, group:'I', home:'França', away:'Senegal', date:'2026-06-16', time:'16:00'},
+  {id:49, phase:'group', round:1, group:'I', home:'Iraque', away:'Noruega', date:'2026-06-16', time:'19:00'},
+  {id:50, phase:'group', round:2, group:'I', home:'França', away:'Iraque', date:'2026-06-22', time:'18:00'},
+  {id:51, phase:'group', round:2, group:'I', home:'Noruega', away:'Senegal', date:'2026-06-22', time:'21:00'},
+  {id:52, phase:'group', round:3, group:'I', home:'Noruega', away:'França', date:'2026-06-26', time:'16:00'},
+  {id:53, phase:'group', round:3, group:'I', home:'Senegal', away:'Iraque', date:'2026-06-26', time:'16:00'},
+
+  {id:54, phase:'group', round:1, group:'J', home:'Argentina', away:'Argélia', date:'2026-06-16', time:'22:00'},
+  {id:55, phase:'group', round:1, group:'J', home:'Áustria', away:'Jordânia', date:'2026-06-17', time:'01:00'},
+  {id:56, phase:'group', round:2, group:'J', home:'Argentina', away:'Áustria', date:'2026-06-22', time:'14:00'},
+  {id:57, phase:'group', round:2, group:'J', home:'Jordânia', away:'Argélia', date:'2026-06-23', time:'00:00'},
+  {id:58, phase:'group', round:3, group:'J', home:'Argélia', away:'Áustria', date:'2026-06-27', time:'23:00'},
+  {id:59, phase:'group', round:3, group:'J', home:'Jordânia', away:'Argentina', date:'2026-06-27', time:'23:00'},
+
+  {id:60, phase:'group', round:1, group:'K', home:'Portugal', away:'Congo RD', date:'2026-06-17', time:'14:00'},
+  {id:61, phase:'group', round:1, group:'K', home:'Uzbequistão', away:'Colômbia', date:'2026-06-17', time:'23:00'},
+  {id:62, phase:'group', round:2, group:'K', home:'Portugal', away:'Uzbequistão', date:'2026-06-23', time:'14:00'},
+  {id:63, phase:'group', round:2, group:'K', home:'Colômbia', away:'Congo RD', date:'2026-06-23', time:'23:00'},
+  {id:64, phase:'group', round:3, group:'K', home:'Colômbia', away:'Portugal', date:'2026-06-27', time:'20:30'},
+  {id:65, phase:'group', round:3, group:'K', home:'Congo RD', away:'Uzbequistão', date:'2026-06-27', time:'20:30'},
+
+  {id:66, phase:'group', round:1, group:'L', home:'Inglaterra', away:'Croácia', date:'2026-06-17', time:'17:00'},
+  {id:67, phase:'group', round:1, group:'L', home:'Gana', away:'Panamá', date:'2026-06-17', time:'20:00'},
+  {id:68, phase:'group', round:2, group:'L', home:'Inglaterra', away:'Gana', date:'2026-06-23', time:'17:00'},
+  {id:69, phase:'group', round:2, group:'L', home:'Panamá', away:'Croácia', date:'2026-06-23', time:'20:00'},
+  {id:70, phase:'group', round:3, group:'L', home:'Panamá', away:'Inglaterra', date:'2026-06-27', time:'18:00'},
+  {id:71, phase:'group', round:3, group:'L', home:'Croácia', away:'Gana', date:'2026-06-27', time:'18:00'}
+];
+
+const ALL = [...GROUP_MATCHES, ...genKnockoutMatches()];
 
 function genKnockoutMatches(){
   const ms=[];
@@ -167,7 +234,6 @@ function genKnockoutMatches(){
   return ms;
 }
 
-const ALL = [...genGroupMatches(),...genKnockoutMatches()];
 const TOTAL = ALL.length;
 
 function getMatch(id){ return ALL.find(m=>m.id===id); }
