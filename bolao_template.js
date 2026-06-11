@@ -12,13 +12,45 @@ const firebaseConfig = {
 };
 const USE_FIREBASE = firebaseConfig.apiKey && firebaseConfig.apiKey !== "COLE_AQUI";
 
-// Inicialização (se estiver usando os SDKs v9+ compat)
+// ─────────────────────────────────────────────
+// FIREBASE SYNC (Versão Corrigida)
+// ─────────────────────────────────────────────
+// Declaramos as variáveis no topo do arquivo (escopo global do script)
+let _db = null;
+let _fbEnabled = false;
+
+// Inicialização Garantida
 if (USE_FIREBASE) {
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    console.log("Firebase conectado com sucesso!");
+    try {
+        // Inicializa se já não estiver inicializado
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        window._db = firebase.firestore(); // Atribuímos ao window para segurança total
+        _db = window._db;
+        _fbEnabled = true;
+        console.log("Firebase conectado e pronto para uso.");
+    } catch (e) {
+        console.error("Erro ao conectar Firebase:", e);
+    }
 }
 
+// ─────────────────────────────────────────────
+// Atualize também sua função setData
+// ─────────────────────────────────────────────
+function setData(d) {
+    try { 
+        localStorage.setItem(SK, JSON.stringify(d)); 
+    } catch(e) { 
+        toast('⚠️ Erro ao salvar localmente: '+e.message, 3500); 
+    }
+    
+    // Agora ele verifica _db com segurança
+    if (_fbEnabled && _db) {
+        _db.collection('bolao').doc('main').set({payload: d, ts: Date.now()})
+            .catch(e => console.warn('[Firebase] Erro ao gravar:', e));
+    }
+}
 // ─────────────────────────────────────────────
 // CONSTANTS
 // ─────────────────────────────────────────────
@@ -152,13 +184,7 @@ function getData(){
   try{ const r=localStorage.getItem(SK); return r?JSON.parse(r):initData(); }
   catch{ return initData(); }
 }
-function setData(d){
-  try{ localStorage.setItem(SK,JSON.stringify(d)); }catch(e){ toast('⚠️ Erro ao salvar: '+e.message,3500); }
-  if(_fbEnabled&&_db){
-    _db.collection('bolao').doc('main').set({payload:d,ts:Date.now()})
-      .catch(e=>console.warn('[Firebase] Erro ao gravar:',e));
-  }
-}
+
 function save(fn){ const d=getData(); fn(d); setData(d); }
 
 // ─────────────────────────────────────────────
